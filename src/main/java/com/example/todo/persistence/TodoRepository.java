@@ -13,6 +13,6 @@ public interface TodoRepository extends JpaRepository<TodoEntity, String> {
     //List<TodoEntity> findByUserId(String userId);
 
     // nativeQuery = false(default)인테 이 경우 JPQL로 작성해야함
-    @Query(value = "select * from Todo t where t.userId = ?1", nativeQuery = true)
+    //@Query(value = "select * from Todo t where t.userId = ?1", nativeQuery = true)
     List<TodoEntity> findByUserId(String userId);
 }
