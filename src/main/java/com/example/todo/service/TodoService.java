@@ -1,11 +1,12 @@
+
 package com.example.todo.service;
 
-import com.example.todo.model.TodoEntity;
-import com.example.todo.persistence.TodoRepository;
-import lombok.extern.slf4j.Slf4j;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import com.example.todo.model.TodoEntity;
+import com.example.todo.persistence.TodoRepository;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,42 +18,40 @@ public class TodoService {
     @Autowired
     private TodoRepository repository;
 
-    public String testService(){
+    public String testService() {
         // TodoEntity 생성
         TodoEntity entity = TodoEntity.builder().title("My first todo item").build();
         // TodoEntity 저장
         repository.save(entity);
         // TodoEntity 검색
         TodoEntity savedEntity = repository.findById(entity.getId()).get();
-        return savedEntity.getId();
+        return savedEntity.getTitle();
     }
 
-    public List<TodoEntity> create(final TodoEntity entity){
-        //validation check
-
+    public List<TodoEntity> create(final TodoEntity entity) {
+        // Validations
+        validate(entity);
 
         repository.save(entity);
-        log.info("Entity Id : {} is saved", entity.getId());
-
+        log.info("Entity Id : {} is saved.", entity.getId());
         return repository.findByUserId(entity.getUserId());
     }
 
-    public List<TodoEntity> retrieve(final String userId){
+    private void validate(final TodoEntity entity) {
+        if(entity == null) {
+            log.warn("Entity cannot be null.");
+            throw new RuntimeException("Entity cannot be null.");
+        }
+
+        if(entity.getUserId() == null) {
+            log.warn("Unknown user.");
+            throw new RuntimeException("Unknown user.");
+        }
+    }
+
+    public List<TodoEntity> retrieve(final String userId) {
         return repository.findByUserId(userId);
     }
-
-    private void validate(final TodoEntity entity){
-        if(entity == null){
-            log.warn("Entity cannot be null.") ;
-            throw new RuntimeException("Entity cannot be null");
-        }
-
-        if(entity.getUserId() == null){
-            log.warn("Unknown UserId") ;
-            throw new RuntimeException("Unknown UserId");
-        }
-    }
-
 
     public List<TodoEntity> update(final TodoEntity entity) {
         // (1) 저장 할 엔티티가 유효한지 확인한다. 이 메서드는 2.3.1 Create Todo에서 구현했다.
@@ -94,13 +93,5 @@ public class TodoService {
         // (5) 새 Todo리스트를 가져와 리턴한다.
         return retrieve(entity.getUserId());
     }
-    //public String testService(){
-        // TodoEntity 생성
-     //   TodoEntity entity = TodoEntity.builder().title("My first todo item").build();
-        // TodoEntity 저장
-       // repository.save(entity);
-        // TodoEntity 검색
-     //   TodoEntity savedEntity = repository.findById(entity.getId()).get();
-     //   return savedEntity.getTitle();
-    //}
+
 }
